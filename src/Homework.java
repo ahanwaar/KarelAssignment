@@ -1,4 +1,5 @@
 import stanford.karel.*;
+import java.util.ArrayList;
 
 /**
  * Level 1: Put beepers only in the odd outside spots (e.g. 1x2, 2x1 are considered odd), then print the number how many you've put, and then
@@ -10,14 +11,9 @@ import stanford.karel.*;
  */
 
 public class Homework extends SuperKarel {
-    private int phase;
-    private int xCoordinate;
-    private int xSize;
-    private int ySize;
-    private int yCoordinate;
-    private int beepersPlaced;
-    private int lvl;
-
+    private int xCoordinate, yCoordinate, xSize, ySize,beepersPlaced;
+    ArrayList<Integer> xMed = new ArrayList<>();
+    ArrayList<Integer> yMed = new ArrayList<>();
 
     public void run() {
         setBeepersInBag(10000);
@@ -25,173 +21,340 @@ public class Homework extends SuperKarel {
         yCoordinate =1;
         xSize =1;
         ySize =1;
-        lvl =1;
-        phase =1;
+        int lvl =1;
+        int phase =1;
+        boolean done = false;
         lvl=1;
 
-        while (lvl ==1){
-            System.out.println("level: 1");
-            while(phase ==1){
-                if(xCoordinate ==1 && yCoordinate ==1){
-                    if (frontIsClear()) populateRow(); //first row
-                    else {
-                        turnLeft();
-                        populateRow();
-                    }
-                    xSize = xCoordinate;
-                }
-                else { // the rest of rows
-                    if (facingEast() && leftIsClear()){
-                        turnLeft();
-                        move();
-                        if(frontIsClear()){
-                            turnLeft();
-                            populateMiddleRow();
-                        }else {
+        while (!done){
+            while (lvl ==1){
+                System.out.println("level: 1");
+                while(phase ==1){
+                    if(xCoordinate ==1 && yCoordinate ==1){
+                        if (frontIsClear()) populateRow(); //first row
+                        else {
                             turnLeft();
                             populateRow();
-                            phase++;
-                            goHome();
                         }
-
-                    }else if (facingWest() && rightIsClear()){
-                        turnRight();
-                        move();
-                        if(frontIsClear()){
-                            turnRight();
-                            populateMiddleRow();
-                        }else {
-                            turnRight();
-                            populateRow();
-                            phase++;
-                            goHome();
-                        }
-                    }else {
-                        phase++;
-                        goHome();
+                        xSize = xCoordinate;
                     }
-                }
-            }
-            while (phase ==2){
-                if(frontIsClear())cleanRow();
-                else{
-                    if(beepersPresent()) pickBeeper();
-                    if(xCoordinate ==1 && yCoordinate ==1 &&facingSouth()) {
-                        lvl =2 ;
-                        phase =1;
-                        // for 8*1 map
-                    }else if(facingEast() && leftIsBlocked()) {
-                        turnAround();
-                        move(xSize-1);
-                        turnEast();//edit
-                        ySize = yCoordinate;
-                        lvl =2;
-                        phase =1;
-
-                    }else {
-                        if(frontIsBlocked() && facingNorth()) ySize = yCoordinate;
-                        // for 1*8 map
-                        if(facingNorth() && frontIsBlocked() && rightIsBlocked() && leftIsBlocked()){
-                            turnAround();
-                            move(ySize-1);
-                            turnEast();
-                            lvl =2 ;
-                            phase =1;
-                        }
-                    }
-                    if(leftIsClear()) turnLeft();
-                }
-            }
-        }
-
-        while (lvl==2){
-            System.out.println("level: 2");
-            while (phase ==1){
-                if(xSize >1)putBeeper();//edit
-                else turnEast();
-                while(leftIsClear()){
-                    if (frontIsClear()){
-                        move();
-                        populateRow2();
-                    } else {
-                        if (facingEast() && xSize > 1){//edit
-                            turnLeftAndMoveUp();
-                        } else if (facingWest() && rightIsClear()){
-                            turnRightAndMoveUp();
-                        }else if(facingEast() && xSize ==1){//edit
+                    else { // the rest of rows
+                        if (facingEast() && leftIsClear()){
                             turnLeft();
-                            putBeeper_Move();
-                            populateRow();
-                            goHome();
-                            lvl=2;
-                            phase=2;
-                            break;
-                        } else {
-                            //right top end corner
-                            turnRight();
-                            if(frontIsClear()){// 1*8 map
-                                cleanRow();
+                            move();
+                            if(frontIsClear()){
+                                turnLeft();
+                                populateMiddleRow();
                             }else {
-                                phase =2;
+                                turnLeft();
+                                populateRow();
+                                phase++;
                                 goHome();
-                                break;
                             }
 
+                        }else if (facingWest() && rightIsClear()){
+                            turnRight();
+                            move();
+                            if(frontIsClear()){
+                                turnRight();
+                                populateMiddleRow();
+                            }else {
+                                turnRight();
+                                populateRow();
+                                phase++;
+                                goHome();
+                            }
+                        }else {
+                            phase++;
+                            goHome();
                         }
                     }
                 }
-                //left top corner
-                while (facingEast() && leftIsBlocked() && frontIsClear()) {
-                    if (beepersPresent()){
-                        move();
-                        populateRow();
-                        phase =2;
-                        goHome();
-                        break;
-                    } else {
-                        populateRow2();
-                        phase =2;
-                        goHome();
+                while (phase ==2){
+                    if(frontIsClear())cleanRow();
+                    else{
+                        if(beepersPresent()) pickBeeper();
+                        if(xCoordinate ==1 && yCoordinate ==1 &&facingSouth()) {
+                            lvl =2 ;
+                            phase =1;
+                            // for 8*1 map
+                        }else if(facingEast() && leftIsBlocked()) {
+                            turnAround();
+                            move(xSize-1);
+                            turnEast();//edit
+                            ySize = yCoordinate;
+                            lvl =2;
+                            phase =1;
+
+                        }else {
+                            if(frontIsBlocked() && facingNorth()) ySize = yCoordinate;
+                            // for 1*8 map
+                            if(facingNorth() && frontIsBlocked() && rightIsBlocked() && leftIsBlocked()){
+                                turnAround();
+                                move(ySize-1);
+                                turnEast();
+                                lvl =2 ;
+                                phase =1;
+                            }
+                        }
+                        if(leftIsClear()) turnLeft();
                     }
                 }
             }
 
-            while (phase == 2){
-                if(frontIsClear())cleanRow();
-                else if(xSize ==1 && frontIsBlocked()){
-                    turnLeft();
-                    cleanRow();
-                    moveTo(1,1);
-                    turnEast();
-                    phase =1;
-                    lvl =3;
-                }
-                else {
-                    if(facingEast()){
-                        turnLeft();
-                        if(frontIsClear()){
-                            move();
-                            turnLeft();
-                        }else {
-                            lvl=3;
-                            phase=1;
-                            moveTo(1,1);
-                            turnEast();
-                        }
-                    }else {
-                        turnRight();
+            while (lvl==2){
+                System.out.println("level: 2");
+                while (phase ==1){
+                    if(xSize >1)putBeeper();//edit
+                    else turnEast();
+                    while(leftIsClear()){
                         if (frontIsClear()){
                             move();
-                            turnRight();
-                        }else {
-                            lvl=3;
-                            phase=1;
-                            moveTo(1,1);
-                            turnEast();
+                            populateRow2();
+                        } else {
+                            if (facingEast() && xSize > 1){//edit
+                                turnLeftAndMoveUp();
+                            } else if (facingWest() && rightIsClear()){
+                                turnRightAndMoveUp();
+                            }else if(facingEast() && xSize ==1){//edit
+                                turnLeft();
+                                putBeeper_Move();
+                                populateRow();
+                                goHome();
+                                lvl=2;
+                                phase=2;
+                                break;
+                            } else {
+                                //right top end corner
+                                turnRight();
+                                if(frontIsClear()){// 1*8 map
+                                    cleanRow();
+                                }else {
+                                    phase =2;
+                                    goHome();
+                                    break;
+                                }
+
+                            }
+                        }
+                    }
+                    //left top corner
+                    while (facingEast() && leftIsBlocked() && frontIsClear()) {
+                        if (beepersPresent()){
+                            move();
+                            populateRow();
+                            phase =2;
+                            goHome();
+                            break;
+                        } else {
+                            populateRow2();
+                            phase =2;
+                            goHome();
                         }
                     }
                 }
 
+                while (phase == 2){
+                    if(frontIsClear())cleanRow();
+                    else if(xSize ==1 && frontIsBlocked()){
+                        turnLeft();
+                        cleanRow();
+                        moveTo(1,1);
+                        turnEast();
+                        phase =1;
+                        lvl =3;
+                    }
+                    else {
+                        if(facingEast()){
+                            turnLeft();
+                            if(frontIsClear()){
+                                move();
+                                turnLeft();
+                            }else {
+                                lvl=3;
+                                phase=1;
+                                moveTo(1,1);
+                                turnEast();
+                            }
+                        }else {
+                            turnRight();
+                            if (frontIsClear()){
+                                move();
+                                turnRight();
+                            }else {
+                                lvl=3;
+                                phase=1;
+                                moveTo(1,1);
+                                turnEast();
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            while (lvl ==3 && !done ){
+                System.out.println("Level: "+ 3);
+                this.xMed = getXMedian();
+                this.yMed =getYMedian();
+                if (phase==1){
+                    if(xSize>1 && ySize >1){// 4 partitions
+                        if(xSize % 2 == 0){//even
+                            moveTo(xMed.get(1),1);
+                            turnNorth();
+                            populateLevel3();
+                            turnLeft();
+                            move();
+                            turnSouth();
+                            populateLevel3();
+                            if(ySize % 2 ==0){
+                                moveTo(1,yMed.get(1));
+                                turnEast();
+                                populateLevel3();
+                                turnSouth();
+                                move();
+                                turnWest();
+                                populateLevel3();
+                                goHome();
+                                phase =2;
+                            }else if(ySize % 2 != 0){
+                                moveTo(xSize,yMed.get(0));
+                                turnWest();
+                                populateLevel3();
+                                goHome(); phase =2;
+                            }
+                        }else if(xSize % 2 != 0){
+                            moveTo(xMed.get(0),1);
+                            turnLeft();
+                            populateLevel3();
+                            if(ySize % 2 == 0){
+                                moveTo(1,yMed.get(1));
+                                turnEast();
+                                populateLevel3();
+                                turnSouth();
+                                move();
+                                turnWest();
+                                populateLevel3();
+                                goHome();
+                                phase =2;
+                            }else if(ySize % 2 != 0){
+                                moveTo(xSize,yMed.get(0));
+                                turnWest();
+                                populateLevel3();
+                                goHome(); phase =2;
+                            }
+                        }
+                    }
+                    else {
+                        if(ySize == 1 ){
+                            if (xMed.size() > 1){
+                                moveTo(xMed.get(0),1);
+                                putBeeper_Move();
+                                putBeeper();
+                                goHome();
+                                phase=2;
+                            }else {
+                                moveTo(xMed.get(0),1);
+                                putBeeper();
+                                goHome();
+                                phase=2;
+                            }
+                        }else if(xSize == 1){
+                            if (yMed.size() > 1){
+                                moveTo(1,yMed.get(0));
+                                putBeeper_Move();
+                                putBeeper();
+                                goHome();
+                                phase=2;
+                            }else {
+                                moveTo(1,yMed.get(0));
+                                putBeeper();
+                                goHome();
+                                phase=2;
+                            }
+                        }
+                    }
+                }
+                if (phase==2){
+                    if(xSize>1 && ySize >1){// 4 partitions
+                        if(xSize % 2 == 0){//even
+                            moveTo(xMed.get(1),1);
+                            turnNorth();
+                            cleanRow();
+                            turnLeft();
+                            move();
+                            turnSouth();
+                            cleanRow();
+                            if(ySize % 2 ==0){
+                                moveTo(1,yMed.get(1));
+                                turnEast();
+                                cleanRow();
+                                turnSouth();
+                                move();
+                                turnWest();
+                                cleanRow();
+                                moveTo(1,1);
+                                done=true;
+                            }else if(ySize % 2 != 0){
+                                moveTo(xSize,yMed.get(0));
+                                turnWest();
+                                cleanRow();
+                                moveTo(1,1);
+                                done=true;
+                            }
+                        }else if(xSize % 2 != 0){
+                            moveTo(xMed.get(0),1);
+                            turnLeft();
+                            cleanRow();
+                            if(ySize % 2 == 0){
+                                moveTo(1,yMed.get(1));
+                                turnEast();
+                                cleanRow();
+                                turnSouth();
+                                move();
+                                turnWest();
+                                cleanRow();
+                                moveTo(1,1);
+                                done=true;
+                            }else if(ySize % 2 != 0){
+                                moveTo(xSize,yMed.get(0));
+                                turnWest();
+                                cleanRow();
+                                moveTo(1,1);
+                                done=true;
+                            }
+                        }
+                    } else {
+                        if(ySize == 1 ){
+                            if (xMed.size() > 1){
+                                moveTo(xMed.get(0),1);
+                                pickBeeper_Move();
+                                pickBeeper();
+                                moveTo(1,1);
+                                done=true;
+                            }else {
+                                moveTo(xMed.get(0),1);
+                                pickBeeper();
+                                moveTo(1,1);
+                                done=true;
+                            }
+                        }else if(xSize == 1){
+                            if (yMed.size() > 1){
+                                moveTo(1,yMed.get(0));
+                                pickBeeper_Move();
+                                pickBeeper();
+                                moveTo(1,1);
+                                done=true;
+                            }else {
+                                moveTo(1,yMed.get(0));
+                                pickBeeper();
+                                moveTo(1,1);
+                                done=true;
+                            }
+                        }
+                    }
+                }
+                turnEast();
             }
         }
     }
@@ -227,6 +390,12 @@ public class Homework extends SuperKarel {
             move();
             putBeeper();
         }
+    }
+
+    private void populateLevel3(){
+        while (frontIsClear()){
+            putBeeper_Move();
+        }if(frontIsBlocked()) putBeeper();
     }
 
     private void populateMiddleRow(){
@@ -265,18 +434,6 @@ public class Homework extends SuperKarel {
             if(beepersPresent())pickBeeper_Move();
             else move();
         }if(frontIsBlocked()&& beepersPresent()) pickBeeper();
-    }
-
-    public void moveUp (){
-        if(facingEast()){
-            turnLeft();
-            move();
-            turnLeft();
-        }else{
-            turnRight();
-            move();
-            turnRight();
-        }
     }
 
     //__________________________MOVEMENTS METHODS____________________
@@ -332,6 +489,28 @@ public class Homework extends SuperKarel {
         beepersPlaced=0;
     }
 
+    public ArrayList<Integer> getXMedian(){
+        ArrayList<Integer> xMed= new ArrayList<>();
+        if(xSize%2==0){
+            xMed.add((xSize / 2 ));
+            xMed.add((xSize / 2) + 1);
+        }else {
+            xMed.add((int)(((xSize/2)+1)));
+        }
+        return xMed;
+    }
+
+    public ArrayList<Integer> getYMedian(){
+        ArrayList<Integer> yMed= new ArrayList<>();
+        if(ySize%2==0){
+            yMed.add((ySize / 2));
+            yMed.add((ySize / 2) +1);
+        }else {
+            yMed.add((int)(((ySize/2)+1)));
+        }
+        return yMed;
+    }
+
     //________________________ Directions Methods_________________
     private void turnNorth(){
         while (!facingNorth()){
@@ -354,7 +533,6 @@ public class Homework extends SuperKarel {
         turnLeft();
     }
 
-    //move up when at row end and facing east
     private void turnLeftAndMoveUp(){
         turnLeft();
         if (frontIsClear() && beepersPresent()){
@@ -367,7 +545,6 @@ public class Homework extends SuperKarel {
         }
     }
 
-    //move up when at row end and facing west
     private void turnRightAndMoveUp(){
         turnRight();
         if (frontIsClear()){
@@ -376,7 +553,6 @@ public class Homework extends SuperKarel {
         }
         turnRight();
     }
-
 }
 
 
