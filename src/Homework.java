@@ -30,6 +30,7 @@ public class Homework extends SuperKarel {
         lvl=1;
 
         while (lvl ==1){
+            System.out.println("level: 1");
             while(phase ==1){
                 if(xCoordinate ==1 && yCoordinate ==1){
                     if (frontIsClear()) populateRow(); //first row
@@ -82,7 +83,7 @@ public class Homework extends SuperKarel {
                     }else if(facingEast() && leftIsBlocked()) {
                         turnAround();
                         move(xSize-1);
-                        turnAround();
+                        turnEast();//edit
                         ySize = yCoordinate;
                         lvl =2;
                         phase =1;
@@ -104,20 +105,27 @@ public class Homework extends SuperKarel {
         }
 
         while (lvl==2){
-            System.out.println("lvl: 2");
+            System.out.println("level: 2");
             while (phase ==1){
-                System.out.println("phase 1");
-                putBeeper();
+                if(xSize >1)putBeeper();//edit
+                else turnEast();
                 while(leftIsClear()){
                     if (frontIsClear()){
-                        System.out.println("here");
                         move();
                         populateRow2();
                     } else {
-                        if (facingEast() && xSize > 1){
+                        if (facingEast() && xSize > 1){//edit
                             turnLeftAndMoveUp();
                         } else if (facingWest() && rightIsClear()){
                             turnRightAndMoveUp();
+                        }else if(facingEast() && xSize ==1){//edit
+                            turnLeft();
+                            putBeeper_Move();
+                            populateRow();
+                            goHome();
+                            lvl=2;
+                            phase=2;
+                            break;
                         } else {
                             //right top end corner
                             turnRight();
@@ -149,9 +157,15 @@ public class Homework extends SuperKarel {
             }
 
             while (phase == 2){
-                System.out.println("phase 2");
-                System.out.println();
                 if(frontIsClear())cleanRow();
+                else if(xSize ==1 && frontIsBlocked()){
+                    turnLeft();
+                    cleanRow();
+                    moveTo(1,1);
+                    turnEast();
+                    phase =1;
+                    lvl =3;
+                }
                 else {
                     if(facingEast()){
                         turnLeft();
