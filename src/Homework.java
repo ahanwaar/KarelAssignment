@@ -30,7 +30,6 @@ public class Homework extends SuperKarel {
         lvl=1;
 
         while (lvl ==1){
-            System.out.println("lvl: 1");
             while(phase ==1){
                 if(xCoordinate ==1 && yCoordinate ==1){
                     if (frontIsClear()) populateRow(); //first row
@@ -39,7 +38,6 @@ public class Homework extends SuperKarel {
                         populateRow();
                     }
                     xSize = xCoordinate;
-                    System.out.println(xSize);
                 }
                 else { // the rest of rows
                     if (facingEast() && leftIsClear()){
@@ -53,7 +51,6 @@ public class Homework extends SuperKarel {
                             populateRow();
                             phase++;
                             goHome();
-                            System.out.println("Iam here :(");
                         }
 
                     }else if (facingWest() && rightIsClear()){
@@ -67,89 +64,93 @@ public class Homework extends SuperKarel {
                             populateRow();
                             phase++;
                             goHome();
-                            System.out.println("Iam here 2");
                         }
                     }else {
                         phase++;
                         goHome();
-                        System.out.println("Iam here 3");
                     }
                 }
             }
             while (phase ==2){
-                System.out.println("phase: 2");
-               if(frontIsClear())cleanRow();
-               else{
-                   System.out.println("else ph2");
-                   if(beepersPresent()) pickBeeper();
-                   if(xCoordinate ==1 && yCoordinate ==1 &&facingSouth()) {
-                       lvl =2 ;
-                       phase =1;
-                       // for 8*1 map
-                   }else if(facingEast() && leftIsBlocked()) {
-                       turnAround();
-                       move(xSize-1);
-                       turnAround();
-                       ySize = yCoordinate;
-                       lvl =2;
-                       phase =1;
+                if(frontIsClear())cleanRow();
+                else{
+                    if(beepersPresent()) pickBeeper();
+                    if(xCoordinate ==1 && yCoordinate ==1 &&facingSouth()) {
+                        lvl =2 ;
+                        phase =1;
+                        // for 8*1 map
+                    }else if(facingEast() && leftIsBlocked()) {
+                        turnAround();
+                        move(xSize-1);
+                        turnAround();
+                        ySize = yCoordinate;
+                        lvl =2;
+                        phase =1;
 
-                   }else {
-                       if(frontIsBlocked() && facingNorth()) ySize = yCoordinate;
-                       // for 1*8 map
-                       if(facingNorth() && frontIsBlocked() && rightIsBlocked() && leftIsBlocked()){
-                           turnAround();
-                           move(ySize-1);
-                           turnAround();
-                           lvl =2 ;
-                           phase =1;
-                       }
-                   }
-                   if(leftIsClear()) turnLeft();
-               }
+                    }else {
+                        if(frontIsBlocked() && facingNorth()) ySize = yCoordinate;
+                        // for 1*8 map
+                        if(facingNorth() && frontIsBlocked() && rightIsBlocked() && leftIsBlocked()){
+                            turnAround();
+                            move(ySize-1);
+                            turnEast();
+                            lvl =2 ;
+                            phase =1;
+                        }
+                    }
+                    if(leftIsClear()) turnLeft();
+                }
             }
         }
 
-        /*while (lvl==2){
+        while (lvl==2){
             System.out.println("lvl: 2");
             while (phase ==1){
+                System.out.println("phase 1");
                 putBeeper();
                 while(leftIsClear()){
                     if (frontIsClear()){
+                        System.out.println("here");
                         move();
                         populateRow2();
                     } else {
-                        if (facingEast()){
+                        if (facingEast() && xSize > 1){
                             turnLeftAndMoveUp();
                         } else if (facingWest() && rightIsClear()){
                             turnRightAndMoveUp();
                         } else {
-                            //when at top end corner
+                            //right top end corner
                             turnRight();
-                            phase =2;
-                            goHome();
-                            break;
+                            if(frontIsClear()){// 1*8 map
+                                cleanRow();
+                            }else {
+                                phase =2;
+                                goHome();
+                                break;
+                            }
+
                         }
                     }
                 }
-                //right top corner
+                //left top corner
                 while (facingEast() && leftIsBlocked() && frontIsClear()) {
                     if (beepersPresent()){
                         move();
-                        populateRow2();
-                        System.out.println("heeere");
+                        populateRow();
                         phase =2;
                         goHome();
+                        break;
                     } else {
-                        System.out.println("nop here");
                         populateRow2();
                         phase =2;
                         goHome();
                     }
                 }
-
             }
+
             while (phase == 2){
+                System.out.println("phase 2");
+                System.out.println();
                 if(frontIsClear())cleanRow();
                 else {
                     if(facingEast()){
@@ -160,7 +161,8 @@ public class Homework extends SuperKarel {
                         }else {
                             lvl=3;
                             phase=1;
-                            goHome();
+                            moveTo(1,1);
+                            turnEast();
                         }
                     }else {
                         turnRight();
@@ -170,13 +172,14 @@ public class Homework extends SuperKarel {
                         }else {
                             lvl=3;
                             phase=1;
-                            goHome();
+                            moveTo(1,1);
+                            turnEast();
                         }
                     }
                 }
 
             }
-        }*/
+        }
     }
 
     //__________________BEEPERS METHODS_______________________
@@ -247,7 +250,7 @@ public class Homework extends SuperKarel {
         while (frontIsClear()){
             if(beepersPresent())pickBeeper_Move();
             else move();
-        }
+        }if(frontIsBlocked()&& beepersPresent()) pickBeeper();
     }
 
     public void moveUp (){
